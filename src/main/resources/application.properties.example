@@ -1,0 +1,10 @@
+spring.ai.google.genai.api-key=YOUR_API_KEY_HERE
+spring.ai.google.genai.chat.options.model=gemini-2.5-flash
+
+spring.h2.console.enabled=true
+spring.h2.console.path=/h2-console
+spring.datasource.url=jdbc:h2:mem:chatbotdb
+spring.datasource.driverClassName=org.h2.Driver
+spring.datasource.username=sa
+spring.datasource.password=password
+spring.jpa.hibernate.ddl-auto=update
