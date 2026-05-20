@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GamerBot Quest Logs</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-color: #09090b;
+            --container-bg: rgba(24, 24, 27, 0.65);
+            --border-color: rgba(255, 255, 255, 0.08);
+            --text-primary: #f4f4f5;
+            --text-secondary: #a1a1aa;
+            --primary-gradient: linear-gradient(135deg, #6366f1 0%, #a855f7 100%);
+        }
+
+        body {
+            font-family: 'Outfit', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-primary);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 40px 20px;
+            background-image:
+                radial-gradient(circle at 15% 50%, rgba(99, 102, 241, 0.15), transparent 25%),
+                radial-gradient(circle at 85% 30%, rgba(168, 85, 247, 0.15), transparent 25%);
+            background-attachment: fixed;
+            box-sizing: border-box;
+        }
+
+        .header-container {
+            text-align: center;
+            margin-bottom: 40px;
+            padding: 20px;
+            background: rgba(24, 24, 27, 0.4);
+            border: 1px solid var(--border-color);
+            border-radius: 20px;
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            width: 100%;
+            max-width: 1000px;
+            box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.5);
+        }
+
+        h1 {
+            margin: 0;
+            font-size: 2.5rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #818cf8, #c084fc);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            letter-spacing: -0.02em;
+        }
+
+        .table-container {
+            width: 100%;
+            max-width: 1200px;
+            background: var(--container-bg);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid var(--border-color);
+            border-radius: 24px;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+            overflow: hidden;
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: left;
+        }
+
+        thead {
+            background: rgba(24, 24, 27, 0.8);
+            border-bottom: 2px solid var(--border-color);
+        }
+
+        th {
+            padding: 20px;
+            font-weight: 600;
+            color: #818cf8;
+            font-size: 1.1rem;
+            white-space: nowrap;
+        }
+
+        td {
+            padding: 16px 20px;
+            border-bottom: 1px solid var(--border-color);
+            vertical-align: top;
+            line-height: 1.6;
+        }
+
+        tbody tr {
+            transition: background-color 0.2s;
+        }
+
+        tbody tr:hover {
+            background-color: rgba(255, 255, 255, 0.03);
+        }
+
+        tbody tr:last-child td {
+            border-bottom: none;
+        }
+
+        .id-cell {
+            color: var(--text-secondary);
+            font-family: monospace;
+            font-size: 0.95rem;
+        }
+
+        .timestamp-cell {
+            color: #a855f7;
+            font-size: 0.95rem;
+            white-space: nowrap;
+        }
+
+        .query-cell {
+            font-weight: 500;
+            max-width: 300px;
+            word-wrap: break-word;
+        }
+
+        .response-cell {
+            color: var(--text-secondary);
+            max-width: 500px;
+            word-wrap: break-word;
+        }
+
+        .nav-link {
+            display: inline-block;
+            margin-top: 30px;
+            padding: 12px 24px;
+            background: rgba(24, 24, 27, 0.6);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            color: var(--text-primary);
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.2s;
+        }
+
+        .nav-link:hover {
+            background: rgba(255, 255, 255, 0.1);
+            border-color: #818cf8;
+            transform: translateY(-2px);
+        }
+
+        .loading,
+        .error {
+            text-align: center;
+            padding: 40px;
+            font-size: 1.2rem;
+            color: var(--text-secondary);
+        }
+
+        .error {
+            color: #ef4444;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="header-container">
+        <h1>🎮 GamerBot Quest Logs</h1>
+    </div>
+
+    <div class="table-container">
+        <table id="logs-table">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Timestamp</th>
+                    <th>User Query</th>
+                    <th>Bot Response</th>
+                </tr>
+            </thead>
+            <tbody id="table-body">
+                <tr>
+                    <td colspan="4" class="loading">Fetching quest logs...</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <a href="/" class="nav-link">← Back to Chat</a>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            fetchHistory();
+        });
+
+        async function fetchHistory() {
+            const tbody = document.getElementById('table-body');
+
+            try {
+                const response = await fetch('/api/history');
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                const data = await response.json();
+
+                tbody.innerHTML = ''; // Clear loading message
+
+                if (data.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="4" style="text-align: center; padding: 40px; color: var(--text-secondary);">No logs found. Start chatting!</td></tr>';
+                    return;
+                }
+
+                data.forEach(log => {
+                    const tr = document.createElement('tr');
+
+                    // ID
+                    const tdId = document.createElement('td');
+                    tdId.className = 'id-cell';
+                    tdId.textContent = log.id || '-';
+
+                    // Timestamp
+                    const tdTime = document.createElement('td');
+                    tdTime.className = 'timestamp-cell';
+                    if (log.timestamp) {
+                        const date = new Date(log.timestamp);
+                        tdTime.textContent = date.toLocaleString();
+                    } else {
+                        tdTime.textContent = '-';
+                    }
+
+                    // Query (FIXED: Added log.userMessage)
+                    const tdQuery = document.createElement('td');
+                    tdQuery.className = 'query-cell';
+                    tdQuery.textContent = log.userMessage || log.userQuery || log.query || '-';
+
+                    // Response
+                    const tdResponse = document.createElement('td');
+                    tdResponse.className = 'response-cell';
+                    const responseText = log.botResponse || log.response || '-';
+                    tdResponse.textContent = responseText;
+
+                    tr.appendChild(tdId);
+                    tr.appendChild(tdTime);
+                    tr.appendChild(tdQuery);
+                    tr.appendChild(tdResponse);
+
+                    tbody.appendChild(tr);
+                });
+
+            } catch (error) {
+                console.error('Error fetching history:', error);
+                tbody.innerHTML = `<tr><td colspan="4" class="error">Failed to load quest logs. Please make sure the backend is running and the /api/history endpoint exists.</td></tr>`;
+            }
+        }
+    </script>
+</body>
+
+</html>
