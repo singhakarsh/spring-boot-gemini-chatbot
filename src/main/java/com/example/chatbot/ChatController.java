@@ -56,6 +56,12 @@ public class ChatController {
         return messageRepository.findAll();
     }
 
+    @org.springframework.web.bind.annotation.DeleteMapping("/api/history/clear")
+    public String clearChatHistory() {
+        messageRepository.deleteAll();
+        return "Database wiped successfully!";
+    }
+
     @GetMapping(value = "/chat/stream", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
     public Flux<String> streamChat(@RequestParam(value = "message", defaultValue = "Hello") String message) {
     

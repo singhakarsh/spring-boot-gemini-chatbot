@@ -190,7 +190,15 @@
         </table>
     </div>
 
-    <a href="/" class="nav-link">← Back to Chat</a>
+    <div class="actions-container"
+        style="text-align: center; margin-top: 20px; display: flex; gap: 15px; justify-content: center;">
+        <a href="index.html" class="btn-secondary"
+            style="text-decoration: none; padding: 10px 20px; background: #2a2a3a; color: #fff; border-radius: 8px;">←
+            Back to Chat</a>
+        <button id="clear-btn" onclick="clearHistory()"
+            style="padding: 10px 20px; background: #ff4757; color: #fff; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; transition: background 0.2s;">💥
+            Wipe Quest Logs</button>
+    </div>
 
     <script>
         document.addEventListener('DOMContentLoaded', () => {
@@ -256,6 +264,32 @@
                 tbody.innerHTML = `<tr><td colspan="4" class="error">Failed to load quest logs. Please make sure the backend is running and the /api/history endpoint exists.</td></tr>`;
             }
         }
+
+        async function clearHistory() {
+            // Show a native confirmation dialog box before destroying data
+            if (!confirm("Are you sure you want to permanently delete all quest logs? This cannot be undone!")) {
+                return;
+            }
+
+            try {
+                const response = await fetch('/api/history/clear', {
+                    method: 'DELETE' // Specifying our custom DELETE method parameter
+                });
+
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+
+                // Refresh the table display instantly to show the "No logs found" message
+                fetchHistory();
+                alert("Database cleared successfully!");
+
+            } catch (error) {
+                console.error('Error clearing history:', error);
+                alert("Failed to clear database logs. Check backend connectivity.");
+            }
+        }
+
     </script>
 </body>
 
