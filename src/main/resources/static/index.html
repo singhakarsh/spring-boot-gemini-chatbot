@@ -1,12 +1,14 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Spring AI Gemini Assistant</title>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark-reasonable.min.css">
+    <link rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark-reasonable.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
     <style>
         :root {
@@ -29,7 +31,7 @@
             align-items: center;
             height: 100vh;
             margin: 0;
-            background-image: 
+            background-image:
                 radial-gradient(circle at 15% 50%, rgba(99, 102, 241, 0.15), transparent 25%),
                 radial-gradient(circle at 85% 30%, rgba(168, 85, 247, 0.15), transparent 25%);
             background-attachment: fixed;
@@ -95,13 +97,16 @@
         .chat-messages::-webkit-scrollbar {
             width: 6px;
         }
+
         .chat-messages::-webkit-scrollbar-track {
             background: transparent;
         }
+
         .chat-messages::-webkit-scrollbar-thumb {
             background: rgba(255, 255, 255, 0.1);
             border-radius: 10px;
         }
+
         .chat-messages::-webkit-scrollbar-thumb:hover {
             background: rgba(255, 255, 255, 0.2);
         }
@@ -114,8 +119,15 @@
         }
 
         @keyframes slideIn {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
 
         .user-wrapper {
@@ -172,8 +184,14 @@
         }
 
         /* Markdown Styles within Bot Message */
-        .bot-message p { margin: 0 0 10px 0; }
-        .bot-message p:last-child { margin: 0; }
+        .bot-message p {
+            margin: 0 0 10px 0;
+        }
+
+        .bot-message p:last-child {
+            margin: 0;
+        }
+
         .bot-message pre {
             background: #1e1e24;
             border-radius: 8px;
@@ -182,6 +200,7 @@
             border: 1px solid var(--border-color);
             margin: 10px 0;
         }
+
         .bot-message code {
             font-family: 'Courier New', Courier, monospace;
             background: rgba(0, 0, 0, 0.2);
@@ -189,14 +208,27 @@
             border-radius: 4px;
             font-size: 0.9em;
         }
+
         .bot-message pre code {
             background: none;
             padding: 0;
             font-size: 0.95em;
         }
-        .bot-message ul, .bot-message ol { margin: 10px 0; padding-left: 20px; }
-        .bot-message a { color: #818cf8; text-decoration: none; }
-        .bot-message a:hover { text-decoration: underline; }
+
+        .bot-message ul,
+        .bot-message ol {
+            margin: 10px 0;
+            padding-left: 20px;
+        }
+
+        .bot-message a {
+            color: #818cf8;
+            text-decoration: none;
+        }
+
+        .bot-message a:hover {
+            text-decoration: underline;
+        }
 
         .chat-input-container {
             padding: 24px;
@@ -278,99 +310,164 @@
             animation: bounce 1.4s infinite ease-in-out both;
         }
 
-        .typing-indicator span:nth-child(1) { animation-delay: -0.32s; }
-        .typing-indicator span:nth-child(2) { animation-delay: -0.16s; }
+        .typing-indicator span:nth-child(1) {
+            animation-delay: -0.32s;
+        }
+
+        .typing-indicator span:nth-child(2) {
+            animation-delay: -0.16s;
+        }
 
         @keyframes bounce {
-            0%, 80%, 100% { transform: scale(0); opacity: 0.3; }
-            40% { transform: scale(1); opacity: 1; }
+
+            0%,
+            80%,
+            100% {
+                transform: scale(0);
+                opacity: 0.3;
+            }
+
+            40% {
+                transform: scale(1);
+                opacity: 1;
+            }
         }
     </style>
 </head>
+
 <body>
 
-<div class="chat-container">
-    <div class="chat-header">
-        <svg class="header-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
-        </svg>
-        <h1>AI Assistant</h1>
-    </div>
-    
-    <div class="chat-messages" id="chat-messages">
-        <!-- Initial Welcome Message -->
-        <div class="message-wrapper bot-wrapper">
-            <div class="avatar bot-avatar">
-                <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
-                </svg>
+    <div class="chat-container">
+        <div class="chat-header">
+            <svg class="header-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                xmlns="http://www.w3.org/2000/svg">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z">
+                </path>
+            </svg>
+            <h1>AI Assistant</h1>
+        </div>
+
+        <div class="chat-messages" id="chat-messages">
+            <!-- Initial Welcome Message -->
+            <div class="message-wrapper bot-wrapper">
+                <div class="avatar bot-avatar">
+                    <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z">
+                        </path>
+                    </svg>
+                </div>
+                <div class="message bot-message">
+                    Hello! I am your advanced AI assistant powered by Spring Boot and Gemini. How can I help you today?
+                </div>
             </div>
-            <div class="message bot-message">
-                Hello! I am your advanced AI assistant powered by Spring Boot and Gemini. How can I help you today?
+        </div>
+
+        <div class="chat-input-container">
+            <div class="chat-input-wrapper">
+                <input type="text" id="user-input" placeholder="Ask me anything..." onkeypress="handleKeyPress(event)"
+                    autocomplete="off">
+                <button class="send-btn" onclick="sendMessage()" aria-label="Send Message">
+                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"></path>
+                    </svg>
+                </button>
             </div>
         </div>
     </div>
 
-    <div class="chat-input-container">
-        <div class="chat-input-wrapper">
-            <input type="text" id="user-input" placeholder="Ask me anything..." onkeypress="handleKeyPress(event)" autocomplete="off">
-            <button class="send-btn" onclick="sendMessage()" aria-label="Send Message">
-                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"></path>
-                </svg>
-            </button>
-        </div>
-    </div>
-</div>
+    <script>
+        // Configure marked to use highlight.js
+        marked.setOptions({
+            highlight: function (code, lang) {
+                const language = hljs.getLanguage(lang) ? lang : 'plaintext';
+                return hljs.highlight(code, { language }).value;
+            },
+            breaks: true
+        });
 
-<script>
-    // Configure marked to use highlight.js
-    marked.setOptions({
-        highlight: function(code, lang) {
-            const language = hljs.getLanguage(lang) ? lang : 'plaintext';
-            return hljs.highlight(code, { language }).value;
-        },
-        breaks: true
-    });
+        const messagesContainer = document.getElementById('chat-messages');
+        const inputField = document.getElementById('user-input');
 
-    const messagesContainer = document.getElementById('chat-messages');
-    const inputField = document.getElementById('user-input');
+        async function sendMessage() {
+            const message = inputField.value.trim();
+            if (!message) return;
 
-    async function sendMessage() {
-        const message = inputField.value.trim();
-        if (!message) return;
+            // 1. Add user message
+            addUserMessage(message);
+            inputField.value = '';
 
-        // Add user message
-        addUserMessage(message);
-        inputField.value = '';
+            // 2. Show typing indicator
+            const loadingId = addTypingIndicator();
 
-        // Show typing indicator
-        const loadingId = addTypingIndicator();
+            try {
+                // 3. Connect to our new streaming endpoint
+                const response = await fetch('/chat/stream?message=' + encodeURIComponent(message));
 
-        try {
-            const response = await fetch('/chat?message=' + encodeURIComponent(message));
-            const text = await response.text();
-            
-            // Remove typing indicator and add bot response
-            removeMessage(loadingId);
-            addBotMessage(text);
-        } catch (error) {
-            removeMessage(loadingId);
-            addBotMessage('**Error:** Could not connect to the server. Please ensure the backend is running.');
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+
+                // 4. Remove the typing indicator *right before* the words start streaming in
+                removeMessage(loadingId);
+
+                // 5. Create an empty bot message bubble that we will fill up chunk-by-chunk
+                const botMessageId = addBotMessage('');
+
+                // Find the exact message element we just created so we can append text to it
+                // (Assuming your layout targets the bubble inner content, we look for the last message container)
+                const chatBox = document.getElementById('chat-box') || document.querySelector('.chat-container');
+                const botMessages = chatBox.querySelectorAll('.bot-message');
+                const targetBubble = botMessages[botMessages.length - 1];
+
+                // 6. Hook up the data stream reader
+                const reader = response.body.getReader();
+                const decoder = new TextDecoder();
+
+                targetBubble.innerHTML = "";
+                let accumulatedText = "";
+
+                // 7. Read stream chunks continuously until the backend finishes
+                while (true) {
+                    const { value, done } = await reader.read();
+                    if (done) break;
+
+                    const chunk = decoder.decode(value, { stream: true });
+
+                    // Clean up standard Server-Sent Events "data:" text tags
+                    const cleanChunk = chunk.replace(/^data:/gm, '');
+
+                    if (cleanChunk) {
+                        // Concatenate chunks natively without adding artificial spaces!
+                        accumulatedText += cleanChunk;
+
+                        // If your project uses markdown parser: targetBubble.innerHTML = tragedy(accumulatedText);
+                        // Otherwise, standard safe plain-text rendering:
+                        targetBubble.textContent = accumulatedText;
+
+                        chatBox.scrollTop = chatBox.scrollHeight;
+                    }
+                }
+
+            } catch (error) {
+                console.error('Streaming error:', error);
+                removeMessage(loadingId);
+                addBotMessage('**Error:** Could not connect to the streaming server. Please ensure the backend is running.');
+            }
         }
-    }
 
-    function handleKeyPress(event) {
-        if (event.key === 'Enter') {
-            sendMessage();
+        function handleKeyPress(event) {
+            if (event.key === 'Enter') {
+                sendMessage();
+            }
         }
-    }
 
-    function addUserMessage(text) {
-        const wrapper = document.createElement('div');
-        wrapper.className = 'message-wrapper user-wrapper';
-        
-        wrapper.innerHTML = `
+        function addUserMessage(text) {
+            const wrapper = document.createElement('div');
+            wrapper.className = 'message-wrapper user-wrapper';
+
+            wrapper.innerHTML = `
             <div class="avatar user-avatar">
                 <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
@@ -378,19 +475,19 @@
             </div>
             <div class="message user-message">${escapeHtml(text)}</div>
         `;
-        
-        messagesContainer.appendChild(wrapper);
-        scrollToBottom();
-    }
 
-    function addBotMessage(markdownText) {
-        const wrapper = document.createElement('div');
-        wrapper.className = 'message-wrapper bot-wrapper';
-        
-        // Parse markdown to HTML
-        const htmlContent = marked.parse(markdownText);
-        
-        wrapper.innerHTML = `
+            messagesContainer.appendChild(wrapper);
+            scrollToBottom();
+        }
+
+        function addBotMessage(markdownText) {
+            const wrapper = document.createElement('div');
+            wrapper.className = 'message-wrapper bot-wrapper';
+
+            // Parse markdown to HTML
+            const htmlContent = marked.parse(markdownText);
+
+            wrapper.innerHTML = `
             <div class="avatar bot-avatar">
                 <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
@@ -398,24 +495,24 @@
             </div>
             <div class="message bot-message">${htmlContent}</div>
         `;
-        
-        messagesContainer.appendChild(wrapper);
-        
-        // Initialize highlight.js on new code blocks
-        wrapper.querySelectorAll('pre code').forEach((block) => {
-            hljs.highlightElement(block);
-        });
-        
-        scrollToBottom();
-    }
 
-    function addTypingIndicator() {
-        const wrapper = document.createElement('div');
-        wrapper.className = 'message-wrapper bot-wrapper';
-        const id = 'typing-' + Date.now();
-        wrapper.id = id;
-        
-        wrapper.innerHTML = `
+            messagesContainer.appendChild(wrapper);
+
+            // Initialize highlight.js on new code blocks
+            wrapper.querySelectorAll('pre code').forEach((block) => {
+                hljs.highlightElement(block);
+            });
+
+            scrollToBottom();
+        }
+
+        function addTypingIndicator() {
+            const wrapper = document.createElement('div');
+            wrapper.className = 'message-wrapper bot-wrapper';
+            const id = 'typing-' + Date.now();
+            wrapper.id = id;
+
+            wrapper.innerHTML = `
             <div class="avatar bot-avatar">
                 <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
@@ -427,37 +524,38 @@
                 </div>
             </div>
         `;
-        
-        messagesContainer.appendChild(wrapper);
-        scrollToBottom();
-        return id;
-    }
 
-    function removeMessage(id) {
-        const element = document.getElementById(id);
-        if (element) {
-            element.remove();
+            messagesContainer.appendChild(wrapper);
+            scrollToBottom();
+            return id;
         }
-    }
 
-    function scrollToBottom() {
-        messagesContainer.scrollTop = messagesContainer.scrollHeight;
-    }
+        function removeMessage(id) {
+            const element = document.getElementById(id);
+            if (element) {
+                element.remove();
+            }
+        }
 
-    function escapeHtml(unsafe) {
-        return unsafe
-             .replace(/&/g, "&amp;")
-             .replace(/</g, "&lt;")
-             .replace(/>/g, "&gt;")
-             .replace(/"/g, "&quot;")
-             .replace(/'/g, "&#039;");
-    }
-    
-    // Focus input on load
-    window.onload = () => {
-        document.getElementById('user-input').focus();
-    };
-</script>
+        function scrollToBottom() {
+            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+        }
+
+        function escapeHtml(unsafe) {
+            return unsafe
+                .replace(/&/g, "&amp;")
+                .replace(/</g, "&lt;")
+                .replace(/>/g, "&gt;")
+                .replace(/"/g, "&quot;")
+                .replace(/'/g, "&#039;");
+        }
+
+        // Focus input on load
+        window.onload = () => {
+            document.getElementById('user-input').focus();
+        };
+    </script>
 
 </body>
+
 </html>
