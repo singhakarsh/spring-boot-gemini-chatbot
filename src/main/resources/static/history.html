@@ -6,6 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>GamerBot Quest Logs</title>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         :root {
             --bg-color: #09090b;
@@ -172,6 +173,33 @@
         <h1>🎮 GamerBot Quest Logs</h1>
     </div>
 
+    <div class="metrics-grid" style="display: flex; gap: 20px; justify-content: space-between; margin-bottom: 25px;">
+        <div class="metric-card"
+            style="flex: 1; background: #1e1e2f; padding: 20px; border-radius: 12px; text-align: center; border: 1px solid #3a3a5a;">
+            <h3 style="color: #8a8a9a; margin: 0; font-size: 0.9rem; text-transform: uppercase;">Total Side-Quests
+                Completed</h3>
+            <p id="metric-total" style="color: #a55eea; font-size: 2.5rem; font-weight: bold; margin: 5px 0 0 0;">0</p>
+        </div>
+        <div class="metric-card"
+            style="flex: 1; background: #1e1e2f; padding: 20px; border-radius: 12px; text-align: center; border: 1px solid #3a3a5a;">
+            <h3 style="color: #8a8a9a; margin: 0; font-size: 0.9rem; text-transform: uppercase;">Avg Query Size (Chars)
+            </h3>
+            <p id="metric-user-len" style="color: #45aaf2; font-size: 2rem; font-weight: bold; margin: 10px 0 0 0;">0
+            </p>
+        </div>
+        <div class="metric-card"
+            style="flex: 1; background: #1e1e2f; padding: 20px; border-radius: 12px; text-align: center; border: 1px solid #3a3a5a;">
+            <h3 style="color: #8a8a9a; margin: 0; font-size: 0.9rem; text-transform: uppercase;">Avg Bot Response Size
+            </h3>
+            <p id="metric-bot-len" style="color: #26de81; font-size: 2rem; font-weight: bold; margin: 10px 0 0 0;">0</p>
+        </div>
+    </div>
+
+    <div class="chart-container"
+        style="background: #1e1e2f; padding: 25px; border-radius: 12px; border: 1px solid #3a3a5a; margin-bottom: 30px; width: 100%; box-sizing: border-box;">
+        <canvas id="activityChart" style="max-height: 300px; width: 100%;"></canvas>
+    </div>
+
     <div class="table-container">
         <table id="logs-table">
             <thead>
@@ -203,7 +231,67 @@
     <script>
         document.addEventListener('DOMContentLoaded', () => {
             fetchHistory();
+            loadAnalyticsDashboard();
         });
+
+        // New independent chart instance pointer
+        let currentChartInstance = null;
+
+        async function loadAnalyticsDashboard() {
+            try {
+                const response = await fetch('/api/analytics');
+                const data = await response.json();
+
+                // 1. Populate the upper XP Summary text blocks dynamically
+                document.getElementById('metric-total').textContent = data.totalQuests;
+                document.getElementById('metric-user-len').textContent = data.avgUserLength;
+                document.getElementById('metric-bot-len').textContent = data.avgBotLength;
+
+                // 2. Clear old chart layouts gracefully if data drops or clears
+                const ctx = document.getElementById('activityChart').getContext('2d');
+                if (currentChartInstance) {
+                    currentChartInstance.destroy();
+                }
+
+                // 3. Draw a sleek, dark-mode purple line trend graph matching our UI theme
+                currentChartInstance = new Chart(ctx, {
+                    type: 'line',
+                    data: {
+                        labels: data.timelineLabels,
+                        datasets: [{
+                            label: 'Quest Operations Log Activity Count',
+                            data: data.timelineValues,
+                            borderColor: '#a55eea',
+                            backgroundColor: 'rgba(165, 94, 234, 0.1)',
+                            borderWidth: 3,
+                            fill: true,
+                            tension: 0.3
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: { labels: { color: '#ffffff' } }
+                        },
+                        scales: {
+                            x: { grid: { color: '#2a2a3a' }, ticks: { color: '#8a8a9a' } },
+                            y: {
+                                grid: { color: '#2a2a3a' },
+                                ticks: {
+                                    color: '#8a8a9a',
+                                    stepSize: 1, // Forces grid lines to tick by 1, 2, 3...
+                                    precision: 0 // Completely removes decimal numbers from the layout!
+                                }
+                            }
+                        }
+                    }
+                });
+
+            } catch (error) {
+                console.error('Failed compiling visualization layouts:', error);
+            }
+        }
 
         async function fetchHistory() {
             const tbody = document.getElementById('table-body');
